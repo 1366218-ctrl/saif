@@ -1,0 +1,14 @@
+[workspace]
+resolver = "2"
+members = ["kernel/core"]
+
+[workspace.package]
+edition = "2024"
+license = "UNLICENSED"
+rust-version = "1.85"
+
+[workspace.lints.rust]
+unsafe_op_in_unsafe_fn = "deny"
+
+[workspace.lints.clippy]
+all = "warn"
