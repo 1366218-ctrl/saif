@@ -2,7 +2,7 @@
 
 **SAIF OS** is an independent operating-system project targeting desktop and mobile-class devices.
 
-The project is being developed from a clean foundation. The initial engineering objective is a small, auditable kernel that can boot under UEFI in an emulator before hardware support and higher-level services are added.
+The project is being developed as an independently branded operating-system product. Because Android APK and Windows application compatibility are core requirements, the current recommendation is to use a maintained Linux kernel foundation for the first usable release while SAIF owns the system services, user experience, installation/update flow, and compatibility integration. A from-scratch SAIF kernel remains a separate long-term research track rather than a blocker for the first release.
 
 ## Initial direction
 
