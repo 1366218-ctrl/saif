@@ -7,11 +7,14 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 
 MAX_DIFF_CHARS = 70_000
+MAX_HTTP_RETRIES = 2
+RETRYABLE_HTTP_STATUS = {429, 500, 502, 503, 504}
 OUTPUT_DIR = Path("ai-review-output")
 CLAUDE_MODEL = os.getenv("CLAUDE_MODEL", "claude-sonnet-5-5")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
@@ -52,14 +55,24 @@ PROJECT_CONTEXT = """SAIF OS project facts:
 def request_json(url: str, headers: dict[str, str], payload: dict) -> dict:
     body = json.dumps(payload).encode("utf-8")
     request = urllib.request.Request(url, data=body, headers=headers, method="POST")
-    try:
-        with urllib.request.urlopen(request, timeout=180) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        detail = exc.read(2000).decode("utf-8", errors="replace")
-        raise RuntimeError(f"Provider returned HTTP {exc.code}: {detail}") from None
-    except urllib.error.URLError as exc:
-        raise RuntimeError(f"Provider connection failed: {exc.reason}") from None
+    for attempt in range(MAX_HTTP_RETRIES + 1):
+        try:
+            with urllib.request.urlopen(request, timeout=180) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            if exc.code in RETRYABLE_HTTP_STATUS and attempt < MAX_HTTP_RETRIES:
+                retry_after = exc.headers.get("Retry-After") if exc.headers else None
+                try:
+                    delay = float(retry_after) if retry_after is not None else 2 ** attempt
+                except (TypeError, ValueError):
+                    delay = 2 ** attempt
+                time.sleep(min(max(delay, 0), 30))
+                continue
+            detail = exc.read(2000).decode("utf-8", errors="replace")
+            raise RuntimeError(f"Provider returned HTTP {exc.code}: {detail}") from None
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"Provider connection failed: {exc.reason}") from None
+    raise RuntimeError("Provider request exhausted its retry attempts.")
 
 def get_pull_request_diff(repo: str, number: int, token: str) -> str:
     url = f"https://api.github.com/repos/{repo}/pulls/{number}"
@@ -130,7 +143,7 @@ def main() -> int:
         return 2
 
     repo = os.getenv("GITHUB_REPOSITORY", "")
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+    if not re.fullmatch(r"[A-Za-z0-9-]+/[A-Za-z0-9][A-Za-z0-9_.-]*", repo):
         print("GITHUB_REPOSITORY must have the owner/repository format.", file=sys.stderr)
         return 2
 
