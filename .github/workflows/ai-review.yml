@@ -1,0 +1,49 @@
+name: SAIF Multi-Model Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: "GitHub pull request number to review"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  review:
+    name: Independent Claude and Gemini review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out trusted default-branch review code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate input and run read-only reviews
+        env:
+          PR_NUMBER: ${{ inputs.pr_number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          CLAUDE_MODEL: claude-sonnet-5-5
+          GEMINI_MODEL: gemini-3.8-flash
+        run: python scripts/ai-review.py
+
+      - name: Upload independent review reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saif-ai-review-pr-${{ inputs.pr_number }}
+          path: ai-review-output/
+          if-no-files-found: warn
+          retention-days: 14
