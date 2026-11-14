@@ -39,11 +39,13 @@ Install `qemu-system-x86_64`, then run:
 ./scripts/test-qemu-boot.sh
 ```
 
-The test starts QEMU with a serial console and requires the SAIF login banner to appear. QEMU is expected to keep running at the login prompt; the test stops it after the timeout and succeeds only if the banner was observed.
+The test starts QEMU with a serial console, a virtio block device, and a user-mode virtio network device. It requires the SAIF login banner and evidence that the guest detected `eth0`. The test also rejects the previous missing-interface timeout. QEMU is expected to keep running at the login prompt; the test stops it after the timeout.
+
+This validates a virtual QEMU network device only. It does not yet validate internet access, Wi-Fi, physical network adapters, or physical hardware.
 
 ## CI evidence
 
-The `qemu-image` GitHub Actions job builds the image, boots it, checks the serial banner, and uploads the image plus configuration, checksums, and serial log as a 14-day artifact. A successful Rust-core job alone is not evidence that the operating-system image boots.
+The `qemu-image` GitHub Actions job builds the image, boots it, checks the serial banner and network-interface detection, and uploads the image plus configuration, checksums, and serial log as a 14-day artifact. A successful Rust-core job alone is not evidence that the operating-system image boots.
 
 ## Current limitations
 
