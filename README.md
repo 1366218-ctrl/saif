@@ -1,39 +1,44 @@
 # SAIF OS
 
-**SAIF OS** is an independent operating-system project targeting desktop and mobile-class devices.
+**SAIF OS** is an independently branded operating-system project targeting desktop first and supported mobile hardware later.
 
-The project is being developed as an independently branded operating-system product. Because Android APK and Windows application compatibility are core requirements, the current recommendation is to use a maintained Linux kernel foundation for the first usable release while SAIF owns the system services, user experience, installation/update flow, and compatibility integration. A from-scratch SAIF kernel remains a separate long-term research track rather than a blocker for the first release.
+The first product direction uses a maintained Linux kernel foundation because running real Android APKs and Windows desktop applications requires mature kernel interfaces, drivers, and compatibility ecosystems. SAIF owns its product identity, boot and setup experience, system services, package experience, desktop/mobile shells, update/recovery flow, and compatibility integration. A from-scratch SAIF kernel remains a separate long-term research track.
 
-## Initial direction
+## Current implementation
 
-- **Kernel language:** Rust (`no_std`) with minimal architecture-specific assembly where required.
-- **First target:** x86_64 UEFI, validated in QEMU.
-- **Architecture:** keep CPU-specific code isolated so additional targets, including AArch64, can be introduced deliberately.
-- **Development principle:** small milestones, reproducible builds, automated checks, and explicit documentation of what is implemented versus planned.
+- Rust `no_std` workspace for SAIF-owned low-level components.
+- Buildroot-based x86_64 Linux foundation recipe, pinned to Buildroot 2025.02.19 LTS.
+- QEMU image build and serial-console boot test wired into GitHub Actions.
+- The prototype is currently a console-only development image. It is not yet a desktop, installer, or Android/Windows compatibility release.
 
-## Current status
+A milestone is considered verified only after CI or reproducible local evidence demonstrates the actual behavior. In particular, a successful Rust test does not prove that the operating-system image boots.
 
-This repository is at its initial foundation stage. A feature is considered implemented only after its code, build, and relevant test evidence are present in the repository.
+## Build and test
 
-## Roadmap
+See [Build and test guide](docs/BUILDING.md).
 
-1. Establish the repository structure and CI checks.
-2. Build a minimal x86_64 UEFI boot path and kernel entry.
-3. Add serial diagnostics and safe halt behavior.
-4. Capture and validate the UEFI memory map.
-5. Introduce memory management, interrupts, scheduling, and system-call boundaries incrementally.
-6. Add drivers, user-space services, and desktop/mobile shells only after the kernel foundations are verified.
+- Build: `./scripts/build-qemu-image.sh`
+- Boot validation: `./scripts/test-qemu-boot.sh`
 
-## Important scope note
+The CI pipeline builds the x86_64 image, boots it in QEMU, checks the serial login banner, and uploads the image and evidence when successful.
 
-A general-purpose replacement operating system for iPhone hardware is not assumed to be feasible. Apple platform boot-chain, signing, and hardware restrictions require separate research; mobile support will be pursued first on hardware and boot environments that permit independent operating systems.
+## Product targets
+
+- **Desktop:** x86_64 UEFI/QEMU first, then documented physical PC hardware.
+- **Windows apps:** evaluate Wine and validate applications individually.
+- **Android apps:** integrate a maintained Android userspace/runtime model with required kernel interfaces.
+- **Mobile:** AArch64 and supported open hardware after the desktop boot and system-service foundations.
+- **iPhone:** research only; no generic replacement-OS support is promised.
 
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Architecture decisions](docs/DECISIONS.md)
+- [Platform matrix and release gates](docs/PLATFORM_MATRIX.md)
+- [Build and test guide](docs/BUILDING.md)
+- [Android and Windows app compatibility](docs/APP_COMPATIBILITY.md)
 
-## License
+## Licensing
 
-No license has been selected yet. Until one is added, all rights are reserved by default.
+SAIF-owned code and the distribution license have not yet been selected. The project must preserve upstream kernel and dependency notices, track source provenance, and publish an SBOM before distributing images. No third-party code is represented as SAIF-authored.
