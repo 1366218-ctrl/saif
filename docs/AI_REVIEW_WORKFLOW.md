@@ -44,7 +44,7 @@ The default model IDs are configured in `.github/workflows/ai-review.yml`:
 - Claude: `claude-sonnet-5-5`
 - Gemini: `gemini-3.8-flash`
 
-The Python client uses the Anthropic Messages API and Google's Gemini `generateContent` REST endpoint. Model IDs can be changed in the workflow environment without changing the review logic.
+The Python client uses the Anthropic Messages API with API version `2026-10-21` and Google's Gemini `generateContent` REST endpoint. Model IDs can be changed in the workflow environment without changing the review logic. The offline test workflow validates syntax, request construction, response parsing, diff truncation, and input rejection without requiring API credentials or making paid model calls.
 
 ## Limitations and safeguards
 
