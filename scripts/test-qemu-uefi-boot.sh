@@ -38,7 +38,7 @@ timeout "$BOOT_TIMEOUT" qemu-system-x86_64 \
   -smp 2 \
   -drive "if=pflash,format=raw,unit=0,readonly=on,file=$CODE" \
   -drive "if=pflash,format=raw,unit=1,file=$VARS_COPY" \
-  -drive "file=$DISK,if=virtio,format=raw" \
+  -drive "file=$DISK,if=ide,format=raw" \
   -netdev user,id=net0 \
   -device virtio-net-pci,netdev=net0 \
   -display none \
