@@ -21,6 +21,15 @@ Status labels: Planned, In progress, and Verified. A milestone becomes Verified 
 - [ ] Review licensing, security-update policy, and hardware support
 - [ ] Capture and validate boot diagnostics and virtual hardware inventory
 
+## M1.5: Live environment and installer (In progress)
+- [ ] Validate the UEFI disk image and OVMF boot in CI
+- [ ] Verify a live boot path that runs without touching an installed system
+- [ ] Complete and test live-media identification and read-only disk inventory
+- [ ] Build the graphical installer shell and disk-selection review screen
+- [ ] Add partition planning, BitLocker detection, and explicit destructive confirmation
+- [ ] Implement installation writes only after QEMU safety tests pass
+- [ ] Validate install, reboot, recovery, and Windows-preservation paths in QEMU
+
 ## M2: SAIF platform base
 - [ ] Select a production-oriented base userspace beyond the console prototype
 - [ ] Kernel configuration and reproducible upstream integration policy
