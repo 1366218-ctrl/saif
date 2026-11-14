@@ -35,9 +35,9 @@ jobs:
         run: cargo test --workspace
 
   qemu-image:
-    name: Build and boot SAIF QEMU image
+    name: Build and boot SAIF x86_64 UEFI image
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     steps:
       - name: Check out source
         uses: actions/checkout@v4
@@ -51,27 +51,43 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/saif-buildroot/dl
-          key: ${{ runner.os }}-saif-buildroot-2025.02.19
+          key: ${{ runner.os }}-saif-buildroot-2025.02.19-uefi
           restore-keys: |
+            ${{ runner.os }}-saif-buildroot-2025.02.19
             ${{ runner.os }}-saif-buildroot-
 
-      - name: Build SAIF x86_64 image
+      - name: Test read-only installer disk inventory
+        run: python3 -m unittest discover -s installer -p 'test_*.py' -v
+
+      - name: Validate shell script syntax
+        run: |
+          for file in scripts/build-qemu-image.sh scripts/test-qemu-boot.sh scripts/test-qemu-uefi-boot.sh; do bash -n "$file"; done
+          for file in platform/buildroot/board/saif/post-build-uefi.sh platform/buildroot/board/saif/post-image-uefi.sh; do sh -n "$file"; done
+
+      - name: Build SAIF x86_64 legacy and UEFI images
         run: |
           SAIF_OUTPUT_DIR="$GITHUB_WORKSPACE/build-output/saif-qemu" SAIF_DL_DIR="$HOME/.cache/saif-buildroot/dl" SAIF_JOBS=2 bash ./scripts/build-qemu-image.sh
 
-      - name: Boot image and verify serial banner
+      - name: Boot legacy QEMU image and verify network interface
         run: bash ./scripts/test-qemu-boot.sh "$GITHUB_WORKSPACE/build-output/saif-qemu"
 
-      - name: Upload bootable image and evidence
+      - name: Boot GPT disk through OVMF UEFI and verify SAIF
+        run: bash ./scripts/test-qemu-uefi-boot.sh "$GITHUB_WORKSPACE/build-output/saif-qemu"
+
+      - name: Upload bootable images and evidence
         uses: actions/upload-artifact@v4
         with:
-          name: saif-qemu-x86_64
+          name: saif-x86_64-uefi-preview
           path: |
             build-output/saif-qemu/saif-qemu-bzImage
             build-output/saif-qemu/saif-qemu-rootfs.ext2
+            build-output/saif-qemu/saif-uefi-disk.img
+            build-output/saif-qemu/OVMF_CODE.fd
+            build-output/saif-qemu/OVMF_VARS.fd
             build-output/saif-qemu/buildroot.config
             build-output/saif-qemu/buildroot-version.txt
             build-output/saif-qemu/SHA256SUMS
             build-output/saif-qemu/qemu-serial.log
+            build-output/saif-qemu/qemu-uefi-serial.log
           if-no-files-found: error
           retention-days: 14
