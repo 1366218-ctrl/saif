@@ -1,4 +1,4 @@
-name: Rust CI
+name: SAIF CI
 
 on:
   push:
@@ -14,7 +14,7 @@ env:
 
 jobs:
   kernel-core:
-    name: Kernel core checks
+    name: Rust core checks
     runs-on: ubuntu-latest
     steps:
       - name: Check out source
@@ -33,3 +33,45 @@ jobs:
 
       - name: Run tests
         run: cargo test --workspace
+
+  qemu-image:
+    name: Build and boot SAIF QEMU image
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Buildroot and QEMU host dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes             bc build-essential cpio file g++ gcc git libncurses-dev             patch perl python3 qemu-system-x86 rsync unzip wget xz-utils
+
+      - name: Cache Buildroot downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/saif-buildroot/dl
+          key: ${{ runner.os }}-saif-buildroot-2025.02.19
+          restore-keys: |
+            ${{ runner.os }}-saif-buildroot-
+
+      - name: Build SAIF x86_64 image
+        run: |
+          SAIF_OUTPUT_DIR="$GITHUB_WORKSPACE/build-output/saif-qemu"           SAIF_DL_DIR="$HOME/.cache/saif-buildroot/dl"           SAIF_JOBS=2           ./scripts/build-qemu-image.sh
+
+      - name: Boot image and verify serial banner
+        run: ./scripts/test-qemu-boot.sh "$GITHUB_WORKSPACE/build-output/saif-qemu"
+
+      - name: Upload bootable image and evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: saif-qemu-x86_64
+          path: |
+            build-output/saif-qemu/saif-qemu-bzImage
+            build-output/saif-qemu/saif-qemu-rootfs.ext2
+            build-output/saif-qemu/buildroot.config
+            build-output/saif-qemu/buildroot-version.txt
+            build-output/saif-qemu/SHA256SUMS
+            build-output/saif-qemu/qemu-serial.log
+          if-no-files-found: error
+          retention-days: 14
