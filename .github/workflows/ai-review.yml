@@ -37,7 +37,9 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           CLAUDE_MODEL: claude-sonnet-5-5
           GEMINI_MODEL: gemini-3.8-flash
-        run: python scripts/ai-review.py
+        run: |
+          python -m py_compile scripts/ai-review.py
+          python scripts/ai-review.py
 
       - name: Upload independent review reports
         if: always()
