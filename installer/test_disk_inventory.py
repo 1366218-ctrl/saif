@@ -63,7 +63,9 @@ class DiskInventoryTests(unittest.TestCase):
 
     def test_requires_explicit_live_media_device(self):
         with self.assertRaises(ValueError):
-            inventory(self.data, "")
+            inventory(self.data, "", "/dev/nvme0n1p2")
+        with self.assertRaises(ValueError):
+            inventory(self.data, "/dev/sdb")
 
     def test_never_enables_installation(self):
         result = inventory(self.data, "/dev/sdb")
