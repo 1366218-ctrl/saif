@@ -12,7 +12,6 @@ import json
 import os
 import subprocess
 import sys
-from pathlib import Path
 from typing import Any
 
 MIN_DISK_BYTES = 16 * 1024**3
@@ -41,6 +40,13 @@ def descendants(node: dict[str, Any]) -> list[dict[str, Any]]:
     return result
 
 
+def has_mountpoints(node: dict[str, Any]) -> bool:
+    values = node.get("mountpoints")
+    if isinstance(values, list):
+        return any(value for value in values)
+    return bool(values)
+
+
 def inventory(data: dict[str, Any], source_device: str,
               root_device: str | None = None,
               minimum_bytes: int = MIN_DISK_BYTES) -> dict[str, Any]:
@@ -56,8 +62,8 @@ def inventory(data: dict[str, Any], source_device: str,
         children = descendants(disk)
         child_paths = {canonical_device(item.get("path")) for item in children}
         child_paths.discard(None)
-        mounted = bool(disk.get("mountpoints")) or any(
-            bool(item.get("mountpoints")) for item in children
+        mounted = has_mountpoints(disk) or any(
+            has_mountpoints(item) for item in children
         )
         source_match = path == source or source in child_paths
         root_match = path == root or root in child_paths if root else False
