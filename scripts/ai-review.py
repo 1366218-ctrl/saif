@@ -90,7 +90,7 @@ def review_with_claude(prompt: str, api_key: str) -> str:
         {
             "content-type": "application/json",
             "x-api-key": api_key,
-            "anthropic-version": "2026-10-21",
+            "anthropic-version": os.getenv("ANTHROPIC_API_VERSION", "2026-10-21"),
         },
         {
             "model": CLAUDE_MODEL,
@@ -130,6 +130,10 @@ def main() -> int:
         return 2
 
     repo = os.getenv("GITHUB_REPOSITORY", "")
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+        print("GITHUB_REPOSITORY must have the owner/repository format.", file=sys.stderr)
+        return 2
+
     github_token = os.getenv("GITHUB_TOKEN", "")
     claude_key = os.getenv("ANTHROPIC_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
