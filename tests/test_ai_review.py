@@ -86,5 +86,32 @@ class AIReviewTests(unittest.TestCase):
                 get_diff.assert_not_called()
 
 
+    def test_provider_request_retries_transient_http_errors(self):
+        transient = review.urllib.error.HTTPError(
+            "https://provider.invalid", 503, "temporarily unavailable", None, io.BytesIO(b"busy")
+        )
+        success = io.BytesIO(b'{"ok": true}')
+        with patch.object(review.urllib.request, "urlopen", side_effect=[transient, success]) as urlopen:
+            with patch.object(review.time, "sleep") as sleep:
+                result = review.request_json(
+                    "https://provider.invalid", {"content-type": "application/json"}, {"prompt": "test"}
+                )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(urlopen.call_count, 2)
+        sleep.assert_called_once()
+
+    def test_provider_request_does_not_retry_permanent_http_errors(self):
+        permanent = review.urllib.error.HTTPError(
+            "https://provider.invalid", 400, "bad request", None, io.BytesIO(b"invalid")
+        )
+        with patch.object(review.urllib.request, "urlopen", side_effect=permanent) as urlopen:
+            with self.assertRaisesRegex(RuntimeError, "HTTP 400"):
+                review.request_json(
+                    "https://provider.invalid", {"content-type": "application/json"}, {"prompt": "test"}
+                )
+
+        urlopen.assert_called_once()
+
 if __name__ == "__main__":
     unittest.main()
