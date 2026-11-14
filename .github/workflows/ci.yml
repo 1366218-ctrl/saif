@@ -57,10 +57,10 @@ jobs:
 
       - name: Build SAIF x86_64 image
         run: |
-          SAIF_OUTPUT_DIR="$GITHUB_WORKSPACE/build-output/saif-qemu" SAIF_DL_DIR="$HOME/.cache/saif-buildroot/dl" SAIF_JOBS=2 ./scripts/build-qemu-image.sh
+          SAIF_OUTPUT_DIR="$GITHUB_WORKSPACE/build-output/saif-qemu" SAIF_DL_DIR="$HOME/.cache/saif-buildroot/dl" SAIF_JOBS=2 bash ./scripts/build-qemu-image.sh
 
       - name: Boot image and verify serial banner
-        run: ./scripts/test-qemu-boot.sh "$GITHUB_WORKSPACE/build-output/saif-qemu"
+        run: bash ./scripts/test-qemu-boot.sh "$GITHUB_WORKSPACE/build-output/saif-qemu"
 
       - name: Upload bootable image and evidence
         uses: actions/upload-artifact@v4
