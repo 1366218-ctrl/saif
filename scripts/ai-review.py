@@ -130,7 +130,7 @@ def main() -> int:
         return 2
 
     repo = os.getenv("GITHUB_REPOSITORY", "")
-    if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+    if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})/[A-Za-z0-9][A-Za-z0-9_.-]*", repo):
         print("GITHUB_REPOSITORY must have the owner/repository format.", file=sys.stderr)
         return 2
 
