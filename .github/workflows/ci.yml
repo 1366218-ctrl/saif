@@ -56,6 +56,11 @@ jobs:
             ${{ runner.os }}-saif-buildroot-2025.02.19
             ${{ runner.os }}-saif-buildroot-
 
+      - name: Validate shell script syntax
+        run: |
+          bash -n scripts/build-qemu-image.sh scripts/test-qemu-boot.sh scripts/test-qemu-uefi-boot.sh
+          sh -n platform/buildroot/board/saif/post-build-uefi.sh platform/buildroot/board/saif/post-image-uefi.sh
+
       - name: Build SAIF x86_64 legacy and UEFI images
         run: |
           SAIF_OUTPUT_DIR="$GITHUB_WORKSPACE/build-output/saif-qemu" SAIF_DL_DIR="$HOME/.cache/saif-buildroot/dl" SAIF_JOBS=2 bash ./scripts/build-qemu-image.sh
