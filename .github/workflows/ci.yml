@@ -58,8 +58,8 @@ jobs:
 
       - name: Validate shell script syntax
         run: |
-          bash -n scripts/build-qemu-image.sh scripts/test-qemu-boot.sh scripts/test-qemu-uefi-boot.sh
-          sh -n platform/buildroot/board/saif/post-build-uefi.sh platform/buildroot/board/saif/post-image-uefi.sh
+          for file in scripts/build-qemu-image.sh scripts/test-qemu-boot.sh scripts/test-qemu-uefi-boot.sh; do bash -n "$file"; done
+          for file in platform/buildroot/board/saif/post-build-uefi.sh platform/buildroot/board/saif/post-image-uefi.sh; do sh -n "$file"; done
 
       - name: Build SAIF x86_64 legacy and UEFI images
         run: |
