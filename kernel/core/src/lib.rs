@@ -6,6 +6,7 @@
 pub const KERNEL_CORE_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 /// A validated half-open physical memory region.
+///
 /// This type does not imply that the region is mapped or allocatable.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct PhysicalRegion {
@@ -14,6 +15,7 @@ pub struct PhysicalRegion {
 }
 
 impl PhysicalRegion {
+    /// Creates a region only when its end is greater than its start.
     pub const fn new(start: u64, end: u64) -> Option<Self> {
         if start < end {
             Some(Self { start, end })
@@ -22,10 +24,21 @@ impl PhysicalRegion {
         }
     }
 
-    pub const fn start(self) -> u64 { self.start }
-    pub const fn end(self) -> u64 { self.end }
-    pub const fn len(self) -> u64 { self.end - self.start }
-    pub const fn is_empty(self) -> bool { false }
+    pub const fn start(self) -> u64 {
+        self.start
+    }
+
+    pub const fn end(self) -> u64 {
+        self.end
+    }
+
+    pub const fn len(self) -> u64 {
+        self.end - self.start
+    }
+
+    pub const fn is_empty(self) -> bool {
+        false
+    }
 }
 
 #[cfg(test)]
