@@ -6,22 +6,25 @@ Status labels: Planned, In progress, and Verified. A milestone becomes Verified 
 - [x] Project identity and initial scope
 - [x] Architecture and roadmap documentation
 - [x] Rust workspace and CI configuration
-- [x] Rust CI executed successfully on the current main revision (format, Clippy, tests)
+- [x] Rust CI executed successfully (format, Clippy, tests)
 - [x] Android/Windows compatibility requirements documented
-- [ ] Reproducible platform build instructions
+- [x] Reproducible Buildroot/QEMU build and boot-test scripts committed
+- [x] Build and test instructions documented
 
-## M1: Platform selection and boot prototype
+## M1: Linux foundation and first boot
 - [x] Select a maintained Linux kernel foundation for the first compatibility-focused product release (ADR-0008)
-- [ ] Complete upstream, licensing, security-update, and hardware-support review
-- [ ] Pin supported kernel baseline and toolchain after compatibility/build validation
-- [ ] Define reproducible x86_64 UEFI image build
-- [ ] Build the first SAIF bootable image
-- [ ] Boot in QEMU and emit a serial startup marker
-- [ ] Capture and validate boot diagnostics and hardware inventory
+- [x] Pin Buildroot 2025.02.19 LTS for the first reproducible prototype
+- [x] Add SAIF identity overlay and x86_64 QEMU build configuration
+- [x] Add CI job to build the image and verify the serial boot banner
+- [ ] Verify the complete image build and QEMU boot in GitHub Actions
+- [ ] Verify upstream source signature and record source/toolchain provenance
+- [ ] Review licensing, security-update policy, and hardware support
+- [ ] Capture and validate boot diagnostics and virtual hardware inventory
 
 ## M2: SAIF platform base
-- [ ] Kernel configuration and reproducible upstream integration
-- [ ] Init/service supervision and system lifecycle
+- [ ] Select a production-oriented base userspace beyond the console prototype
+- [ ] Kernel configuration and reproducible upstream integration policy
+- [ ] SAIF init/service supervision and system lifecycle
 - [ ] Storage layout, filesystem policy, and device discovery
 - [ ] Network, graphics, display, input, and audio integration
 - [ ] Security model, permissions, sandboxing, and secrets handling
@@ -60,4 +63,4 @@ Status labels: Planned, In progress, and Verified. A milestone becomes Verified 
 - [ ] Separate feasibility assessment for Apple/iPhone restrictions
 - [ ] Evaluate virtualization/container boundaries for application isolation and performance
 
-The first public milestone is a verified QEMU boot, not a claim of application compatibility. Android and Windows support require the dedicated milestones above.
+The first public milestone is a verified QEMU boot to the SAIF console banner, not a claim of application compatibility. Android and Windows support require the dedicated milestones above.
