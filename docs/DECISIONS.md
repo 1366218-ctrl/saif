@@ -38,3 +38,14 @@ The comparison must document licensing, security maintenance, hardware support, 
 **Status:** Accepted
 
 A supported application must be tested through installation, launch, UI rendering, input, storage, network, and relevant audio/graphics behavior. Compatibility is published as a versioned matrix. Universal Windows or Android compatibility is not promised.
+
+## ADR-0008: Prefer application compatibility over a from-scratch kernel for the first product release
+**Status:** Proposed
+
+The user’s latest product requirement makes practical Android APK and Windows application support a release requirement. Reimplementing the Linux kernel interfaces needed by Android, while also building a Win32 compatibility environment, would make a first usable release substantially less achievable.
+
+**Recommendation:** Build SAIF as an independently branded and engineered operating-system product on a maintained Linux kernel foundation for the first release. SAIF will own its boot experience, system services, package/install experience, desktop and mobile shells, update/recovery system, design language, and compatibility integration. Evaluate Wine for Windows applications and a maintained Android runtime/userspace deployment model for APKs.
+
+This changes the original all-new-kernel ambition. It does not mean claiming the Linux kernel as SAIF-authored. Kernel provenance, upstream security updates, and all third-party licenses must be preserved and documented. A future SAIF-native kernel may be developed as a separate long-term research track, but it must not block the compatibility-focused product.
+
+**Release gate:** Do not advertise Windows or Android support until real applications pass installation and runtime tests on documented target hardware.
