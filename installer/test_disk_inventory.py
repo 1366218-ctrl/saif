@@ -68,7 +68,7 @@ class DiskInventoryTests(unittest.TestCase):
             inventory(self.data, "/dev/sdb")
 
     def test_never_enables_installation(self):
-        result = inventory(self.data, "/dev/sdb")
+        result = inventory(self.data, "/dev/sdb", "/dev/nvme0n1p2")
         self.assertFalse(result["installation_enabled"])
         self.assertEqual(result["mode"], "read-only-inventory")
 
