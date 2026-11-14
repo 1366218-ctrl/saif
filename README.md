@@ -38,6 +38,7 @@ The CI pipeline builds the x86_64 image, boots it in QEMU, checks the serial log
 - [Platform matrix and release gates](docs/PLATFORM_MATRIX.md)
 - [Build and test guide](docs/BUILDING.md)
 - [Android and Windows app compatibility](docs/APP_COMPATIBILITY.md)
+- [Multi-model AI review workflow](docs/AI_REVIEW_WORKFLOW.md)
 
 ## Licensing
 
