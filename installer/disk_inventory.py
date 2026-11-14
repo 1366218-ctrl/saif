@@ -54,6 +54,8 @@ def inventory(data: dict[str, Any], source_device: str,
     root = canonical_device(root_device)
     if source is None:
         raise ValueError("--source-device must be an explicit /dev path")
+    if root is None:
+        raise ValueError("--root-device must be an explicit /dev path")
 
     disks = flatten_disks(data.get("blockdevices") or [])
     output = []
@@ -110,7 +112,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-device", required=True,
                         help="explicit live USB/device path, e.g. /dev/sdb")
-    parser.add_argument("--root-device",
+    parser.add_argument("--root-device", required=True,
                         help="block device backing the running system root")
     parser.add_argument("--minimum-gib", type=int, default=16)
     args = parser.parse_args()
