@@ -43,3 +43,4 @@ The CI pipeline builds the x86_64 image, boots it in QEMU, checks the serial log
 ## Licensing
 
 SAIF-owned code and the distribution license have not yet been selected. The project must preserve upstream kernel and dependency notices, track source provenance, and publish an SBOM before distributing images. No third-party code is represented as SAIF-authored.
+SAIF OS - Multi-model engineering review enabled.
