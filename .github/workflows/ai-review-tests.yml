@@ -1,0 +1,35 @@
+name: SAIF AI Review Client Tests
+
+on:
+  push:
+    paths:
+      - "scripts/ai-review.py"
+      - "tests/test_ai_review.py"
+      - ".github/workflows/ai-review-tests.yml"
+  pull_request:
+    paths:
+      - "scripts/ai-review.py"
+      - "tests/test_ai_review.py"
+      - ".github/workflows/ai-review-tests.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Compile and run offline tests
+        run: |
+          python -m py_compile scripts/ai-review.py tests/test_ai_review.py
+          python -m unittest discover -s tests -p 'test_ai_review.py' -v
