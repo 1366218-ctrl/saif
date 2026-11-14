@@ -5,7 +5,9 @@ inventory layer. It is not yet a graphical installer and it cannot install SAIF.
 
 ## Safety contract
 
-- The live-media device must be passed explicitly with `--source-device`.
+- The live-media device and the block device backing the running root must both
+  be passed explicitly with `--source-device` and `--root-device`. If either
+  identity is unknown, inventory fails closed instead of listing candidates.
 - The live-media disk, running system-root disk, mounted disks, removable media,
   USB-transport disks, read-only disks, and disks below the minimum size are
   excluded from the eligible list.
