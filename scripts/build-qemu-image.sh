@@ -41,6 +41,8 @@ BR2_TARGET_GENERIC_GETTY=y
 BR2_TARGET_GENERIC_GETTY_PORT="ttyS0"
 BR2_TARGET_GENERIC_GETTY_BAUDRATE_115200=y
 BR2_TARGET_ROOTFS_EXT2=y
+# The runner provides QEMU; do not cross-build a second host QEMU copy.
+# BR2_PACKAGE_HOST_QEMU is not set
 EOF
 
 make -C "$BUILDROOT_DIR" olddefconfig
