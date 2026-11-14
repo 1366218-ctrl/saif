@@ -56,6 +56,9 @@ jobs:
             ${{ runner.os }}-saif-buildroot-2025.02.19
             ${{ runner.os }}-saif-buildroot-
 
+      - name: Test read-only installer disk inventory
+        run: python3 -m unittest discover -s installer -p 'test_*.py' -v
+
       - name: Validate shell script syntax
         run: |
           for file in scripts/build-qemu-image.sh scripts/test-qemu-boot.sh scripts/test-qemu-uefi-boot.sh; do bash -n "$file"; done
