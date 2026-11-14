@@ -8,19 +8,21 @@ The first product direction uses a maintained Linux kernel foundation because ru
 
 - Rust `no_std` workspace for SAIF-owned low-level components.
 - Buildroot-based x86_64 Linux foundation recipe, pinned to Buildroot 2025.02.19 LTS.
-- QEMU image build and serial-console boot test wired into GitHub Actions.
-- The prototype is currently a console-only development image. It is not yet a desktop, installer, or Android/Windows compatibility release.
+- Build pipeline now assembles a GPT disk with an EFI System Partition, GRUB2 x86_64 EFI bootloader, and EDK2 OVMF firmware.
+- GitHub Actions is configured to test both the existing direct-kernel QEMU path and the new OVMF UEFI disk path.
+- The product remains a console-only development image. It is not yet a graphical desktop, live USB installer, disk installer, or Android/Windows compatibility release.
 
-A milestone is considered verified only after CI or reproducible local evidence demonstrates the actual behavior. In particular, a successful Rust test does not prove that the operating-system image boots.
+A milestone is considered verified only after CI or reproducible local evidence demonstrates the actual behavior. The UEFI path is pending its first successful CI boot test; a committed workflow is not itself proof of a successful boot.
 
 ## Build and test
 
 See [Build and test guide](docs/BUILDING.md).
 
 - Build: `./scripts/build-qemu-image.sh`
-- Boot validation: `./scripts/test-qemu-boot.sh`
+- Direct-kernel diagnostic: `./scripts/test-qemu-boot.sh`
+- GPT/UEFI boot test: `./scripts/test-qemu-uefi-boot.sh`
 
-The CI pipeline builds the x86_64 image, boots it in QEMU, checks the serial login banner, and uploads the image and evidence when successful.
+The CI pipeline is configured to build the x86_64 images, boot them in QEMU, check the SAIF serial login banner and guest network-device detection, and upload images and evidence when successful.
 
 ## Product targets
 
@@ -43,4 +45,3 @@ The CI pipeline builds the x86_64 image, boots it in QEMU, checks the serial log
 ## Licensing
 
 SAIF-owned code and the distribution license have not yet been selected. The project must preserve upstream kernel and dependency notices, track source provenance, and publish an SBOM before distributing images. No third-party code is represented as SAIF-authored.
-SAIF OS - Multi-model engineering review enabled.
