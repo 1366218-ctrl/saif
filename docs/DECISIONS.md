@@ -24,3 +24,17 @@ Keep the kernel and architecture layers reusable, but treat device support and u
 **Status:** Accepted
 
 A feature is not complete because it is documented or listed in a plan. Mark it implemented only when code exists and the relevant build/test evidence is available.
+
+## ADR-0006: Android and Windows application compatibility is a core requirement
+**Status:** Accepted
+
+The product goal includes installing and running Android APKs and Windows desktop applications. These require separate runtime and API compatibility stacks. An installer or executable loader alone is not sufficient.
+
+**Implementation policy:** Evaluate a Wine-based Windows compatibility environment and a maintained Android userspace/runtime deployment model. Before selecting a final kernel strategy, compare a native SAIF kernel with compatibility subsystems, a SAIF host with virtualized guest environments, and a Linux-derived kernel foundation with SAIF-owned services and user experience.
+
+The comparison must document licensing, security maintenance, hardware support, performance, and project ownership. No option is selected by this record. The decision requires a documented engineering spike and evidence.
+
+## ADR-0007: Compatibility claims require application-level tests
+**Status:** Accepted
+
+A supported application must be tested through installation, launch, UI rendering, input, storage, network, and relevant audio/graphics behavior. Compatibility is published as a versioned matrix. Universal Windows or Android compatibility is not promised.
